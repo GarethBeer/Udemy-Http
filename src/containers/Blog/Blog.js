@@ -1,77 +1,31 @@
 import React, { Component } from "react";
-
-import Post from "../../components/Post/Post";
-import FullPost from "../../components/FullPost/FullPost";
-import NewPost from "../../components/NewPost/NewPost";
+import Posts from "../Posts/Posts";
+import NewPost from "../NewPost/NewPost";
+import { Switch, Route, Link } from "react-router-dom";
 import "./Blog.css";
-import axios from "axios";
+
+import classes from "./Blog.css";
 
 class Blog extends Component {
-	state = {
-		posts: [],
-		selectedPost: null,
-		error: false
-	};
-	componentDidMount() {
-		axios
-			.get("posts")
-			.then(response => {
-				const posts = response.data.slice(0, 4);
-				const updatedPosts = posts.map(post => {
-					return {
-						...post,
-						author: "Gareth"
-					};
-				});
-				this.setState({
-					posts: updatedPosts
-				});
-			})
-			.catch(error =>
-				this.setState({
-					error: true
-				})
-			);
-	}
-
-	deletePostHandler = () => {
-		axios
-			.delete(`/posts/${this.props.id}`)
-			.then(response => console.log(response));
-	};
-
-	clickPostHandler = id => {
-		this.setState({
-			selectedPost: id
-		});
-	};
 	render() {
-		let posts = <p style={{ textAlign: "center" }}>Something went wrong</p>;
-		if (!this.state.error) {
-			posts = this.state.posts.map(post => {
-				return (
-					<Post
-						key={post.id}
-						title={post.title}
-						author={post.author}
-						clicked={() => this.clickPostHandler(post.id)}
-					/>
-				);
-			});
-		}
-
 		return (
-			<div>
-				<section className="Posts">{posts}</section>
-				<section>
-					<FullPost
-						id={this.state.selectedPost}
-						delete={this.deletePostHandler}
-					/>
-				</section>
-				<section>
-					<NewPost />
-				</section>
+			<div className="blog">
+				<header>
+					<nav>
+						<ul>
+							<li>
+								<Link to="/">Home</Link>
+							</li>
+							<li>
+								<Link to="/new-post">New Post</Link>
+							</li>
+						</ul>
+					</nav>
+				</header>
+				<Switch>
+					<Route path="/" exact component={Posts} />
+					<Route path="/new-post" exact component={NewPost} />
+				</Switch>
 			</div>
 		);
 	}
